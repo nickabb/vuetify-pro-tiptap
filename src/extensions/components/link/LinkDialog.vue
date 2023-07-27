@@ -28,13 +28,21 @@ const isDisabled = computed(() => {
   return false
 })
 
+const addProtocolIfMissing = (url: string, protocol = 'https') => {
+  if (!/^(https?:\/\/|ftp:\/\/|sftp:\/\/|file:\/\/|data:|mailto:|tel:|ssh:)/i.test(url)) {
+    return `${protocol}://${url}`;
+  }
+  return url;
+}
+
 function apply() {
   if (unref(url)) {
+    const finalUrl = addProtocolIfMissing(unref(url))
     props.editor
       .chain()
       .focus()
       .extendMarkRange('link')
-      .setLink({ href: unref(url) })
+      .setLink({ href: finalUrl })
       .run()
   }
   close()
